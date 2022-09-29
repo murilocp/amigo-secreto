@@ -6,15 +6,27 @@ import { SectionContainer } from "./styles";
 const Raffle: React.FC = () => {
   const [participantNow, setParticipantNow] = useState("");
   const [secretFriend, setSecretFriend] = useState("");
+  const [timerId, setTimerId] = useState<NodeJS.Timeout | undefined>(undefined);
 
   const participants = useParticipantList();
   const result = useSortResult();
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (result.has(participantNow))
+
+    if (result.has(participantNow)) {
       setSecretFriend(result.get(participantNow)!);
+    }
+
+    if (timerId) clearTimeout(timerId);
+
+    setTimerId(
+      setTimeout(() => {
+        setSecretFriend("");
+      }, 5000)
+    );
   };
+
   return (
     <Card>
       <SectionContainer>
