@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { RecoilRoot } from "recoil";
 import Raffle from ".";
 import { useParticipantList, useSortResult } from "../../state/hook";
@@ -58,5 +58,35 @@ describe("Raffle page", () => {
     const secretFriend = screen.getByRole("alert");
 
     expect(secretFriend).toBeInTheDocument();
+  });
+
+  test("Should hide secret friend after 5 seconds", () => {
+    jest.useFakeTimers();
+
+    render(
+      <RecoilRoot>
+        <Raffle />
+      </RecoilRoot>
+    );
+
+    const select = screen.getByPlaceholderText("Selecione o seu nome");
+
+    fireEvent.change(select, { target: { value: participants[0] } });
+
+    const button = screen.getByRole("button");
+
+    fireEvent.click(button);
+
+    let secretFriend = screen.queryByRole("alert");
+
+    expect(secretFriend).toBeInTheDocument();
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    secretFriend = screen.queryByRole("alert");
+
+    expect(secretFriend).toBeNull();
   });
 });
